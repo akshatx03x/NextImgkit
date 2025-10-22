@@ -15,13 +15,11 @@ export default async function dbConnect() {
         return cached.conn;
     }
     if (!cached.promise) {
-        mongoose
-        .connect(MONGO_URI)
-        .then(() => {mongoose.connection});
+        cached.promise = mongoose.connect(MONGO_URI).then(() => mongoose.connection);
     }
     try {
         cached.conn = await cached.promise;
-    }catch (e) {
+    } catch (e) {
         cached.promise = null;
         throw e;
     }
