@@ -21,7 +21,7 @@ const LoginPage = () => {
     if (result?.error) {
       setErrorMsg(result.error);
     } else {
-      router.push("/");
+      router.push("/upload");
     }
   };
 

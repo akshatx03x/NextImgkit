@@ -8,6 +8,18 @@ const publicPaths = ["/login", "/register", "/api/auth", "/"];
 // Middleware function
 export default withAuth(
   function middleware(req) {
+    const { pathname } = req.nextUrl;
+
+    // Skip middleware for static files and public assets
+    if (
+      pathname.startsWith('/_next/static') ||
+      pathname.startsWith('/_next/image') ||
+      pathname === '/favicon.ico' ||
+      pathname.startsWith('/public')
+    ) {
+      return NextResponse.next();
+    }
+
     return NextResponse.next();
   },
   {
@@ -30,17 +42,3 @@ export default withAuth(
     },
   }
 );
-
-// Specify which routes this middleware should run on
-export const config = {
-  matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
-    "/(?!_next/static|_next/image|favicon.ico|public/).*",
-  ],
-};
