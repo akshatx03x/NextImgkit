@@ -1,6 +1,9 @@
-# Fix Register API 500 Error
+# TODO: Make Videos User-Specific
 
-- [x] Remove pre-save hook from models/User.ts
-- [x] Update app/api/auth/register/route.ts to hash password manually and add detailed logging
-- [ ] Ensure MONGO_URI is set in .env file
-- [ ] Test registration functionality
+## Tasks
+- [x] Update Video model (models/Video.ts) to include userId field referencing User model
+- [x] Modify POST /api/video/route.ts to associate video with authenticated user
+- [x] Update GET /api/video/route.ts to filter videos by authenticated user's ID
+
+## Followup Steps
+- [x] Test by uploading a video and verifying it only appears on uploader's homepage

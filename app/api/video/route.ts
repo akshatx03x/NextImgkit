@@ -3,11 +3,19 @@ import dbConnect from "@/lib/db";
 import Video, { IVideo } from "@/models/Video";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
 
 export async function GET() {
     try {
+        const session = await getServerSession(authOptions)
+        if (!session) {
+            return NextResponse.json(
+                { error: "Unauthorised" },
+                { status: 401 }
+            )
+        }
         await dbConnect();
-        const videos = await Video.find({}).sort({ createdAt: -1 }).lean()
+        const videos = await Video.find({ userId: new mongoose.Types.ObjectId(session.user.id) }).sort({ createdAt: -1 }).lean()
 
         if (!videos || videos.length === 0) {
             return NextResponse.json([], { status: 200 })
@@ -31,14 +39,13 @@ export async function POST(request: NextRequest) {
         await dbConnect();
         const body: IVideo = await request.json()
         if (!body.title|| !body.description || !body.videoUrl || !body.thumbnailUrl) {
-            {
-                return NextResponse.json({ error: "Missing Required fields" },
-                    { status: 400 })
-            }
+            return NextResponse.json({ error: "Missing Required fields" },
+                { status: 400 })
         }
         const videoData={
             ...body,
             controls: body?.controls ?? true,
+            userId: new mongoose.Types.ObjectId(session.user.id),
             transformation: {
                   height: 1920,
                   width: 1080,
@@ -50,7 +57,7 @@ export async function POST(request: NextRequest) {
     } catch (error) {
         return NextResponse.json(
                 { error: "Failed to create video" },
-                { status: 401 }
+                { status: 500 }
             )
     }
 }

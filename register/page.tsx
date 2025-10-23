@@ -1,11 +1,13 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 const RegisterPage = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState('')
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -19,6 +21,9 @@ const RegisterPage = () => {
       })
       const data = await response.json()
       setMessage(data.message)
+      if (response.ok) {
+        router.push('/login')
+      }
     } catch (error) {
       setMessage('An error occurred')
     }

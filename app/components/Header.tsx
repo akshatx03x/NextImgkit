@@ -5,6 +5,7 @@ import { useSession, signOut } from "next-auth/react";
 import { Home, User } from "lucide-react";
 import { useNotification } from "./Notification";
 
+
 export default function Header() {
   const { data: session } = useSession();
   const { showNotification } = useNotification();

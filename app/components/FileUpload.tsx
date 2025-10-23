@@ -25,10 +25,12 @@ const FileUpload = ({ onSuccess, onProgress, fileType }: FileUploadProps) => {
     if (fileType === "video") {
       if (!file.type.startsWith("video/")) {
         setError("Please upload a valid video file");
+        return false;
       }
     }
     if (file.size > 100 * 1024 * 1024) {
       setError("File size must be less than 100 MB");
+      return false;
     }
     return true;
   };
@@ -45,26 +47,33 @@ const FileUpload = ({ onSuccess, onProgress, fileType }: FileUploadProps) => {
       const authRes = await fetch("/api/auth/imagekit-auth");
       const auth = await authRes.json();
 
+      if (auth.error) {
+        throw new Error(auth.error);
+      }
+
+      console.log('Auth response:', auth);
+
       const res = await upload({
         file,
         fileName: file.name,
-        publicKey: process.env.NEXT_PUBLIC_PUBLIC_KEY!,
+        publicKey: auth.publicKey,
         signature: auth.signature,
         expire: auth.expire,
         token: auth.token,
-        onProgress: (event) => {
-          if(event.lengthComputable && onProgress){
-            const percent = (event.loaded / event.total) * 100;
-            onProgress(Math.round(percent))
+        onProgress: (progress) => {
+          if (onProgress) {
+            const percent = (progress.loaded / progress.total) * 100;
+            onProgress(Math.round(percent));
           }
         },
-        
+
       });
       onSuccess(res)
     } catch (error) {
-        console.error("Upload failed", error)
+        console.error("Upload failed", error);
+        setError(error instanceof Error ? error.message : "Upload failed");
     } finally {
-        setUploading(false)
+        setUploading(false);
     }
   };
 
@@ -76,6 +85,7 @@ const FileUpload = ({ onSuccess, onProgress, fileType }: FileUploadProps) => {
         onChange={handleFileChange}
       />
       {uploading && <span>Loading....</span>}
+      {error && <span style={{ color: 'red' }}>{error}</span>}
     </>
   );
 };
