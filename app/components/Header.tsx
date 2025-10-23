@@ -24,7 +24,7 @@ export default function Header() {
       <div className="container mx-auto">
         <div className="flex-1 px-2 lg:flex-none">
           <Link
-            href="/"
+            href="/videopage"
             className="btn btn-ghost text-xl gap-2 normal-case font-bold"
             prefetch={true}
             onClick={() =>

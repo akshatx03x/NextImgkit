@@ -3,13 +3,15 @@ import VideoComponent from "./VideoComponent";
 
 interface VideoFeedProps {
   videos: IVideo[];
+  onVideoDelete?: (videoId: string) => void;
+  onVideoEdit?: (video: IVideo) => void;
 }
 
-export default function VideoFeed({ videos }: VideoFeedProps) {
+export default function VideoFeed({ videos, onVideoDelete }: VideoFeedProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {videos.map((video) => (
-        <VideoComponent key={video._id?.toString()} video={video} />
+        <VideoComponent key={video._id?.toString()} video={video} onDelete={onVideoDelete} />
       ))}
 
       {videos.length === 0 && (

@@ -3,79 +3,8 @@
 import { useState, useCallback } from "react";
 import { Send, Video, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
-
-// --- START MOCK IMPORTS FOR SANDBOX ENVIRONMENT ---
-
-// 1. Mock for useRouter from "next/navigation"
-const mockUseRouter = () => ({
-  push: (path) => {
-    console.log(`[MOCK] Navigating to: ${path}`);
-    // In a real Next.js app, this would change the URL.
-  },
-});
-
-// 2. Mock for useNotification
-// Provides a mock showNotification function.
-const useNotification = () => ({
-  showNotification: (msg, type) => {
-    console.log(`[Notification MOCK - ${type.toUpperCase()}] ${msg}`);
-  }
-});
-
-// 3. Mock for FileUpload Component
-// This mock simulates the file upload process, showing progress and calling onSuccess.
-const FileUpload = ({ onSuccess, onProgress, onUploadStart, fileType }) => {
-  const [fileName, setFileName] = useState(null);
-  
-  const handleFileChange = (event) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setFileName(file.name);
-    
-    // Call the start handler
-    if (onUploadStart) onUploadStart();
-
-    // Simulate upload progress
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 20;
-      if (progress <= 100) {
-        onProgress(progress);
-      }
-      
-      if (progress >= 100) {
-        clearInterval(interval);
-        // Simulate a successful response object
-        onSuccess({ 
-            url: `https://mock-video-host.com/uploads/${file.name.replace(/\s/g, '_')}_${Date.now()}.mp4`,
-            filename: file.name
-        });
-      }
-    }, 500);
-  };
-
-  return (
-    <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-lg cursor-pointer transition-colors bg-gray-800 border-gray-700 hover:bg-gray-700">
-      <input
-        type="file"
-        accept={fileType === 'video' ? 'video/*' : '*/*'}
-        onChange={handleFileChange}
-        className="hidden"
-        id="file-upload-mock"
-        disabled={!!fileName}
-      />
-      <label htmlFor="file-upload-mock" className="flex flex-col items-center cursor-pointer text-gray-400">
-        <Video className="w-8 h-8 mb-2 text-purple-400" />
-        <p className="text-sm font-medium">
-            {fileName ? `File Selected: ${fileName}` : `Click to select your ${fileType} file`}
-        </p>
-        <p className="text-xs mt-1 text-gray-500">Max file size: 50MB</p>
-      </label>
-    </div>
-  );
-};
-// --- END MOCK IMPORTS FOR SANDBOX ENVIRONMENT ---
+import FileUpload from "../components/FileUpload";
+import { useNotification } from "../components/Notification";
 
 
 // Assuming this component is located at src/app/upload/page.tsx
@@ -99,15 +28,15 @@ export default function UploadPage() {
     setUploadProgress(0);
   }, []);
 
-  const handleUploadSuccess = useCallback((res) => {
+  const handleUploadSuccess = useCallback((res: any) => {
     setVideoUrl(res.url);
     setIsUploading(false);
-    setUploadProgress(100); 
+    setUploadProgress(100);
     showNotification("Video uploaded successfully!", "success");
   }, [showNotification]);
 
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
@@ -116,7 +45,7 @@ export default function UploadPage() {
        setIsSubmitting(false);
        return;
     }
-    
+
     if (!videoUrl) {
       showNotification("Please upload a video first.", "warning");
       setIsSubmitting(false);
@@ -124,14 +53,26 @@ export default function UploadPage() {
     }
 
     try {
-      // MOCK: Replace fetch with a simulated API call
-      console.log("[API MOCK] Submitting Metadata:", { title, description, videoUrl });
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network latency
+      const response = await fetch("/api/video", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          videoUrl,
+          thumbnailUrl: videoUrl, // Using videoUrl as thumbnail for now
+        }),
+      });
 
-      // MOCK: Simulate success response
+      if (!response.ok) {
+        throw new Error("Failed to save video");
+      }
+
       showNotification("Video metadata saved successfully! Redirecting...", "success");
-      setTimeout(() => router.push("/"), 1000); 
-      
+      setTimeout(() => router.push("/videopage"), 1000);
+
     } catch (error) {
       console.error(error);
       showNotification("Failed to save video. Please try again.", "error");
@@ -162,7 +103,7 @@ export default function UploadPage() {
 
       <div className="w-full max-w-3xl p-8 sm:p-10 bg-gray-900 rounded-2xl shadow-2xl border border-gray-800 relative">
         <button
-          onClick={() => router.push('/')}
+          onClick={() => router.push('/videopage')}
           className="absolute top-4 left-4 flex items-center gap-2 px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white rounded-lg transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -216,7 +157,6 @@ export default function UploadPage() {
             <FileUpload
               onSuccess={handleUploadSuccess}
               onProgress={setUploadProgress}
-              onUploadStart={handleUploadStart} 
               fileType="video"
             />
 
