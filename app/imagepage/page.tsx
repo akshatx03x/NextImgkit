@@ -3,52 +3,52 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import VideoFeed from "../components/VideoFeed";
-import { IVideo } from "@/models/Video";
-import { Upload, Video, RotateCw, ArrowLeft } from "lucide-react";
+import ImageFeed from "../components/ImageFeed";
+import { IImage } from "@/models/Image";
+import { Upload, Image, RotateCw, ArrowLeft } from "lucide-react";
 import { useNotification } from "../components/Notification";
 
-export default function VideoPage() {
+export default function ImagePage() {
   const { data: session, status } = useSession();
-  const [videos, setVideos] = useState<IVideo[]>([]);
+  const [images, setImages] = useState<IImage[]>([]);
   const { showNotification } = useNotification();
 
   const handleDeleteClick = async (id: string) => {
     try {
-      const response = await fetch(`/api/video?id=${id}`, {
+      const response = await fetch(`/api/image?id=${id}`, {
         method: "DELETE",
       });
 
       if (response.ok) {
-        setVideos((prev) => prev.filter((video) => video._id !== id));
-        showNotification("Video deleted successfully", "success");
+        setImages((prev) => prev.filter((image) => image._id !== id));
+        showNotification("Image deleted successfully", "success");
       } else {
-        showNotification("Failed to delete video", "error");
+        showNotification("Failed to delete image", "error");
       }
     } catch (error) {
-      console.error("Error deleting video:", error);
-      showNotification("Error deleting video", "error");
+      console.error("Error deleting image:", error);
+      showNotification("Error deleting image", "error");
     }
   };
 
-  const handleEditClick = (updatedVideo: IVideo) => {
-    setVideos((prev) => prev.map((video) => video._id === updatedVideo._id ? updatedVideo : video));
+  const handleEditClick = (updatedImage: IImage) => {
+    setImages((prev) => prev.map((image) => image._id === updatedImage._id ? updatedImage : image));
   };
 
   useEffect(() => {
     if (status === "authenticated") {
-      const fetchVideos = async () => {
+      const fetchImages = async () => {
         try {
-          const response = await fetch("/api/video");
+          const response = await fetch("/api/image");
           if (response.ok) {
             const data = await response.json();
-            setVideos(data);
+            setImages(data);
           }
         } catch (error) {
-          console.error("Failed to fetch videos:", error);
+          console.error("Failed to fetch images:", error);
         }
       };
-      fetchVideos();
+      fetchImages();
     }
   }, [status]);
 
@@ -69,10 +69,10 @@ export default function VideoPage() {
     mainContent = (
       <div className="flex flex-col items-center justify-center p-12 bg-gray-900 rounded-xl border-2 border-dashed border-gray-700 mt-10">
         <p className="text-xl font-semibold mb-4 text-gray-300">
-          Access Your Video AI Tools
+          Access Your Image AI Tools
         </p>
         <p className="text-center text-gray-500 mb-6">
-          Please log in to upload, process, and view your AI-enhanced videos.
+          Please log in to upload, process, and view your AI-enhanced images.
         </p>
         <Link
           href="/login"
@@ -82,28 +82,28 @@ export default function VideoPage() {
         </Link>
       </div>
     );
-  } else if (videos.length === 0) {
+  } else if (images.length === 0) {
     mainContent = (
       <div className="flex flex-col items-center justify-center p-20 bg-gray-900/50 rounded-xl border-2 border-dashed border-purple-600 mt-10 shadow-xl">
-        <Video className="w-16 h-16 text-purple-500 mb-4" />
+        <Image className="w-16 h-16 text-purple-500 mb-4" />
         <p className="text-2xl font-bold mb-2 text-white">
-          Your Videos Will Appear Here
+          Your Images Will Appear Here
         </p>
         <p className="text-center text-gray-400 mb-8 max-w-md">
-          It looks like you haven't uploaded any videos yet. Click below to get started!
+          It looks like you haven't uploaded any images yet. Click below to get started!
         </p>
         <Link
-          href="/upload"
+          href="/uploadimage"
           className="flex items-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors shadow-lg shadow-purple-900/50 text-lg"
         >
           <Upload className="w-5 h-5 mr-2" />
-          Upload Your First Video
+          Upload Your First Image
         </Link>
       </div>
     );
   } else {
-    // @ts-ignore: VideoFeedProps may not declare these handlers but they are passed for runtime usage
-    mainContent = <VideoFeed videos={videos} onVideoDelete={handleDeleteClick} onVideoEdit={handleEditClick} />;
+    // @ts-ignore: ImageFeedProps may not declare these handlers but they are passed for runtime usage
+    mainContent = <ImageFeed images={images} onImageDelete={handleDeleteClick} onImageEdit={handleEditClick} />;
   }
 
   return (
@@ -119,7 +119,7 @@ export default function VideoPage() {
               Back
             </Link>
             <h1 className="text-4xl font-extrabold tracking-tight">
-              Edit ~Videos
+              Edit ~Images
             </h1>
           </div>
           <span className="text-sm font-light italic text-gray-300 left-3">
@@ -127,7 +127,7 @@ export default function VideoPage() {
           </span>
           {session && (
             <Link
-              href="/upload"
+              href="/uploadimage"
               className="flex items-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow-lg shadow-purple-900/50"
             >
               <Upload className="w-5 h-5 mr-2" />

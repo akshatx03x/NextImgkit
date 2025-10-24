@@ -39,22 +39,22 @@ const HomePage = () => {
       <div className="w-full max-w-xl bg-gray-900 rounded-3xl p-8 sm:p-12 shadow-2xl border border-gray-800 space-y-6">
         
         {/* Image Editor Button */}
-        <button
-          onClick={handleEditImage}
+        <Link
+          href="/imagepage"
           className="w-full h-24 flex items-center justify-between p-6 rounded-xl 
                      bg-gray-800 hover:bg-purple-900/50 
                      border border-gray-700 hover:border-purple-600 transition-all duration-300 group"
         >
           <div className="flex items-center space-x-4">
             <div className="p-3 rounded-full bg-purple-600 group-hover:bg-purple-500 transition-colors">
-              <Image className="w-6 h-6 text-white" />
+              <Video className="w-6 h-6 text-white" /> 
             </div>
             <span className="text-2xl font-semibold text-white group-hover:text-purple-300 transition-colors">
               Edit Image
             </span>
           </div>
           <ChevronRight className="w-6 h-6 text-gray-400 group-hover:text-white transition-transform group-hover:translate-x-1" />
-        </button>
+        </Link>
 
         {/* Video Editor Link */}
         <Link

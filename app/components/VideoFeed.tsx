@@ -8,15 +8,15 @@ interface VideoFeedProps {
 }
 
 export default function VideoFeed({ videos, onVideoDelete, onVideoEdit }: VideoFeedProps) {
-  const handleVideoEdit = (updatedVideo: IVideo) => {
+  const handleVideoEdit = (updatedVideo: any) => {
     // Update the video in the local state
-    onVideoEdit?.(updatedVideo);
+    onVideoEdit?.(updatedVideo as IVideo);
   };
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {videos.map((video) => (
-        <VideoComponent key={video._id?.toString()} video={video as any} onDelete={onVideoDelete} onEdit={handleVideoEdit} />
+        <VideoComponent key={video._id?.toString()} video={video} onDelete={onVideoDelete} onEdit={handleVideoEdit as any} />
       ))}
 
       {videos.length === 0 && (

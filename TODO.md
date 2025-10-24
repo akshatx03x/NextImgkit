@@ -1,6 +1,12 @@
-# TODO: Set Default Aspect Ratio to 9:16 for Videos
+# TODO: Add Image Upload and Edit Logic to Image Page
 
-## Tasks
-- [x] Update models/Video.ts to include aspectRatio in transformation schema with default '9:16'
-- [x] Update app/api/video/route.ts POST to set aspectRatio: '9:16' in transformation
-- [x] Update app/components/VideoComponent.tsx to default aspectRatio to '9:16' in getAspectRatio, select value, and handleAspectRatioChange dimensions (set '9:16' to 1080x1920, '16:9' to 1920x1080)
+## Steps to Complete
+
+- [x] Create models/Image.ts (similar to Video.ts for images)
+- [x] Create app/api/image/route.ts (CRUD API for images)
+- [x] Create app/components/ImageComponent.tsx (similar to VideoComponent, but for images with img tag and image transformations)
+- [x] Create app/components/ImageFeed.tsx (grid of ImageComponents)
+- [x] Create app/uploadimage/page.tsx (upload page for images, similar to upload/page.tsx)
+- [x] Edit app/imagepage/page.tsx to mirror videopage/page.tsx logic for images
+- [x] Test image upload, edit, and delete
+- [x] Ensure user authentication and proper associations

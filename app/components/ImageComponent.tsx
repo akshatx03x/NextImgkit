@@ -1,36 +1,23 @@
-  // VideoComponent.tsx
+// ImageComponent.tsx
   "use client";
 
-  import { useEffect, useState } from "react";
-  import { Trash2, Edit, Save, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Trash2, Edit, Save, X, Download } from "lucide-react";
 
-  interface IVideo {
-    _id?: string | number;
-    title: string;
-    description: string;
-    videoUrl: string;
-    controls: boolean;
-    transformation: {
-      aspectRatio?: '16:9' | '9:16' | '4:3' | '1:1' | '21:9';
-      width: number;
-      height: number;
-      quality: number;
-      filter?: 'none' | 'sepia' | 'grayscale' | 'blur';
-    };
-  }
+import { IImage } from "@/models/Image";
 
-  export default function VideoComponent({
-    video,
+  export default function ImageComponent({
+    image,
     onDelete,
     onEdit
   }: {
-    video: IVideo;
+    image: IImage;
     onDelete?: (id: string) => void;
-    onEdit?: (video: IVideo) => void;
+    onEdit?: (image: IImage) => void;
   }) {
     const [isDeleting, setIsDeleting] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [editedVideo, setEditedVideo] = useState(video);
+    const [editedImage, setEditedImage] = useState(image);
 
     const showNotification = (msg: string, type: 'success' | 'error') => console.log(`[${type}] ${msg}`);
 
@@ -40,12 +27,12 @@
 
       setIsDeleting(true);
       try {
-        if (video._id !== undefined) {
-          onDelete?.(video._id.toString());
+        if (image._id !== undefined) {
+          onDelete?.(image._id.toString());
         }
       } catch (error) {
-        console.error("Error deleting video:", error);
-        showNotification(error instanceof Error ? error.message : "Failed to delete video", "error");
+        console.error("Error deleting image:", error);
+        showNotification(error instanceof Error ? error.message : "Failed to delete image", "error");
       } finally {
         setIsDeleting(false);
       }
@@ -53,37 +40,37 @@
 
     const handleEdit = () => {
       setIsEditing(true);
-      setEditedVideo({ ...video });
+      setEditedImage({ ...image });
     };
 
     const handleSave = async () => {
       try {
-          const response = await fetch(`/api/video?id=${editedVideo._id}`, {
+          const response = await fetch(`/api/image?id=${editedImage._id}`, {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(editedVideo),
+              body: JSON.stringify(editedImage),
           });
           if (!response.ok) throw new Error("Update failed.");
           const updatedData = await response.json();
 
-          showNotification("Video updated successfully", "success");
+          showNotification("Image updated successfully", "success");
           setIsEditing(false);
           onEdit?.(updatedData); // Use updatedData from API
       } catch (error) {
-        console.error("Error updating video:", error);
-        showNotification(error instanceof Error ? error.message : "Failed to update video", "error");
+        console.error("Error updating image:", error);
+        showNotification(error instanceof Error ? error.message : "Failed to update image", "error");
       }
     };
 
     const handleCancel = () => {
       setIsEditing(false);
-      setEditedVideo(video);
+      setEditedImage(image);
     };
 
-    const currentVideo = isEditing ? editedVideo : video;
+    const currentImage = isEditing ? editedImage : image;
 
     const getCSSFilter = () => {
-      switch (currentVideo.transformation.filter) {
+      switch (currentImage.transformation.filter) {
         case 'sepia': return 'sepia(1)';
         case 'grayscale': return 'grayscale(1)';
         case 'blur': return 'blur(10px)';
@@ -102,16 +89,41 @@
       }
     };
 
-    const getTransformedVideoUrl = (url: string, aspectRatio: string | undefined) => {
+    const getTransformedImageUrl = (url: string, aspectRatio: string | undefined, includeAllTransforms: boolean = false) => {
       // If the URL already has transformation parameters, return as is
       if (url.includes('?tr=')) return url;
-      if (!aspectRatio || aspectRatio === '16:9') return url; // No transformation for 16:9 default
-      // Apply transformation for other aspect ratios
-      const transform = aspectRatio === '9:16' ? 'ar-9-16,c-at_max' :
-                      aspectRatio === '4:3' ? 'ar-4-3,c-at_max' :
-                      aspectRatio === '1:1' ? 'ar-1-1,c-at_max' :
-                      aspectRatio === '21:9' ? 'ar-21-9,c-at_max' : '';
-      return transform ? `${url}?tr=${transform}` : url;
+
+      const transforms = [];
+
+      // Aspect ratio transformation
+      if (aspectRatio && aspectRatio !== '16:9') {
+        const arTransform = aspectRatio === '9:16' ? 'ar-9-16,c-at_max' :
+                           aspectRatio === '4:3' ? 'ar-4-3,c-at_max' :
+                           aspectRatio === '1:1' ? 'ar-1-1,c-at_max' :
+                           aspectRatio === '21:9' ? 'ar-21-9,c-at_max' : '';
+        if (arTransform) transforms.push(arTransform);
+      }
+
+      // Include quality and filter only if includeAllTransforms is true (for download)
+      if (includeAllTransforms) {
+        const currentImage = isEditing ? editedImage : image;
+
+        // Quality transformation
+        if (currentImage.transformation.quality && currentImage.transformation.quality !== 100) {
+          transforms.push(`q-${currentImage.transformation.quality}`);
+        }
+
+        // Filter transformation
+        if (currentImage.transformation.filter && currentImage.transformation.filter !== 'none') {
+          const filterTransform = currentImage.transformation.filter === 'sepia' ? 'e-sepia' :
+                                 currentImage.transformation.filter === 'grayscale' ? 'e-grayscale' :
+                                 currentImage.transformation.filter === 'blur' ? 'bl-10' : '';
+          if (filterTransform) transforms.push(filterTransform);
+        }
+      }
+
+      const transformString = transforms.join(',');
+      return transformString ? `${url}?tr=${transformString}` : url;
     };
 
     const handleAspectRatioChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -128,10 +140,10 @@
         default: width = 1080; height = 1920;
       }
 
-      setEditedVideo({
-        ...editedVideo,
+      setEditedImage({
+        ...editedImage,
         transformation: {
-          ...editedVideo.transformation,
+          ...editedImage.transformation,
           aspectRatio: aspectRatio as '16:9' | '9:16' | '4:3' | '1:1' | '21:9',
           width,
           height
@@ -145,11 +157,11 @@
           <div className="relative group w-full">
             <div
               className="rounded-xl overflow-hidden relative w-full"
-              style={{ aspectRatio: getAspectRatio(currentVideo.transformation.aspectRatio) }}
+              style={{ aspectRatio: getAspectRatio(currentImage.transformation.aspectRatio) }}
             >
-              <video
-                src={getTransformedVideoUrl(currentVideo.videoUrl, currentVideo.transformation.aspectRatio)}
-                controls={currentVideo.controls}
+              <img
+                src={getTransformedImageUrl(currentImage.imageUrl, currentImage.transformation.aspectRatio)}
+                alt={currentImage.title}
                 className="w-full h-full object-cover"
                 style={{ filter: getCSSFilter() }}
               />
@@ -162,14 +174,14 @@
             <>
               <input
                 type="text"
-                value={editedVideo.title}
-                onChange={(e) => setEditedVideo({ ...editedVideo, title: e.target.value })}
+                value={editedImage.title}
+                onChange={(e) => setEditedImage({ ...editedImage, title: e.target.value })}
                 className="input input-bordered input-sm w-full mb-2"
                 placeholder="Title"
               />
               <textarea
-                value={editedVideo.description}
-                onChange={(e) => setEditedVideo({ ...editedVideo, description: e.target.value })}
+                value={editedImage.description}
+                onChange={(e) => setEditedImage({ ...editedImage, description: e.target.value })}
                 className="textarea textarea-bordered textarea-sm w-full mb-2"
                 placeholder="Description"
                 rows={2}
@@ -178,7 +190,7 @@
               <div className="mb-2">
                 <label className="label label-text text-sm">Aspect Ratio</label>
                 <select
-                  value={editedVideo.transformation.aspectRatio || '9:16'}
+                  value={editedImage.transformation.aspectRatio || '9:16'}
                   onChange={handleAspectRatioChange}
                   className="select select-bordered select-sm w-full mb-2 text-white"
                 >
@@ -193,35 +205,35 @@
               <div className="grid grid-cols-2 gap-2 mb-2">
                 <input
                   type="number"
-                  value={editedVideo.transformation.width}
-                  onChange={(e) => setEditedVideo({ ...editedVideo, transformation: { ...editedVideo.transformation, width: parseInt(e.target.value) || 0 } })}
+                  value={editedImage.transformation.width}
+                  onChange={(e) => setEditedImage({ ...editedImage, transformation: { ...editedImage.transformation, width: parseInt(e.target.value) || 0 } })}
                   className="input input-bordered input-sm"
                   placeholder="Width"
                 />
                 <input
                   type="number"
-                  value={editedVideo.transformation.height}
-                  onChange={(e) => setEditedVideo({ ...editedVideo, transformation: { ...editedVideo.transformation, height: parseInt(e.target.value) || 0 } })}
+                  value={editedImage.transformation.height}
+                  onChange={(e) => setEditedImage({ ...editedImage, transformation: { ...editedImage.transformation, height: parseInt(e.target.value) || 0 } })}
                   className="input input-bordered input-sm"
                   placeholder="Height"
                 />
               </div>
 
               <div className="mb-2">
-                <label className="label label-text text-sm">Quality: {editedVideo.transformation.quality || 100}%</label>
+                <label className="label label-text text-sm">Quality: {editedImage.transformation.quality || 100}%</label>
                 <input
                   type="range"
                   min="1"
                   max="100"
-                  value={editedVideo.transformation.quality || 100}
-                  onChange={(e) => setEditedVideo({ ...editedVideo, transformation: { ...editedVideo.transformation, quality: parseInt(e.target.value) } })}
+                  value={editedImage.transformation.quality || 100}
+                  onChange={(e) => setEditedImage({ ...editedImage, transformation: { ...editedImage.transformation, quality: parseInt(e.target.value) } })}
                   className="range range-primary range-sm"
                 />
               </div>
 
               <select
-                value={editedVideo.transformation.filter || 'none'}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setEditedVideo({ ...editedVideo, transformation: { ...editedVideo.transformation, filter: e.target.value as 'none' | 'sepia' | 'grayscale' | 'blur' } })}
+                value={editedImage.transformation.filter || 'none'}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setEditedImage({ ...editedImage, transformation: { ...editedImage.transformation, filter: e.target.value as 'none' | 'sepia' | 'grayscale' | 'blur' } })}
                 className="select select-bordered select-sm w-full mb-2 text-white"
               >
                 <option className=" text-black" value="none">No Filter</option>
@@ -241,16 +253,27 @@
             </>
           ) : (
             <>
-              <a href={`/videos/${video._id}`} className="hover:opacity-80 transition-opacity">
-                <h2 className="card-title text-lg">Title- {video.title}</h2>
+              <a href={`/images/${image._id}`} className="hover:opacity-80 transition-opacity">
+                <h2 className="card-title text-lg">Title- {image.title}</h2>
               </a>
               <p className="text-sm text-base-content/70 line-clamp-2">
-                Description- {video.description}
+                Description- {image.description}
               </p>
 
               <span className="card-actions gap-3 justify-start flex mt-2">
                 <button onClick={handleEdit} className="btn btn-sm btn-primary btn-outline">
                   <Edit className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => {
+                    const link = document.createElement('a');
+                    link.href = getTransformedImageUrl(image.imageUrl, image.transformation.aspectRatio, true);
+                    link.download = `${image.title}.jpg`;
+                    link.click();
+                  }}
+                  className="btn btn-sm btn-info btn-outline"
+                >
+                  <Download className="w-4 h-4" />
                 </button>
                 <button onClick={handleDelete} disabled={isDeleting} className="btn btn-sm btn-error btn-outline text-red-700">
                   {isDeleting ? (
