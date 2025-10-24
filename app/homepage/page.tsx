@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import FileUpload from "../components/FileUpload";
 import VideoFeed from "../components/VideoFeed";
@@ -21,6 +21,7 @@ export default function HomePage() {
   const [uploading, setUploading] = useState(false);
   const [videos, setVideos] = useState<IVideo[]>([]);
 
+  // ✅ Fetch all videos
   useEffect(() => {
     const fetchVideos = async () => {
       try {
@@ -33,16 +34,39 @@ export default function HomePage() {
         console.error("Failed to fetch videos:", error);
       }
     };
-
     fetchVideos();
   }, []);
 
+  const handleDeleteClick = async (id: string) => {
+    try {
+      const response = await fetch(`/api/video?id=${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setVideos((prev) => prev.filter((video) => video._id !== id));
+        showNotification("Video deleted successfully", "success");
+      } else {
+        showNotification("Failed to delete video", "error");
+      }
+    } catch (error) {
+      console.error("Error deleting video:", error);
+      showNotification("Error deleting video", "error");
+    }
+  };
+
+  const handleEditClick = (updatedVideo: IVideo) => {
+    setVideos((prev) => prev.map((video) => video._id === updatedVideo._id ? updatedVideo : video));
+  };
+
+  // ✅ Handle successful upload
   const handleUploadSuccess = (res: any) => {
     setVideoUrl(res.url);
     setUploading(false);
     showNotification("Video uploaded successfully!", "success");
   };
 
+  // ✅ Handle metadata submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -61,15 +85,14 @@ export default function HomePage() {
           title,
           description,
           videoUrl,
-          thumbnailUrl: videoUrl, // Using videoUrl as thumbnail for now
+          thumbnailUrl: videoUrl,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to save video");
-      }
+      if (!response.ok) throw new Error("Failed to save video");
 
       showNotification("Video metadata saved!", "success");
+
       // Refresh videos after upload
       const fetchVideos = async () => {
         try {
@@ -83,6 +106,8 @@ export default function HomePage() {
         }
       };
       fetchVideos();
+
+      // Reset form
       setTitle("");
       setDescription("");
       setVideoUrl("");
@@ -92,17 +117,29 @@ export default function HomePage() {
     }
   };
 
+  // ✅ Handle Logout properly
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    router.push("/login");
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Header Section */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Welcome to Video with AI</h1>
-        {!session && (
+        {session ? (
+          <button onClick={handleLogout} className="btn btn-secondary">
+            Logout
+          </button>
+        ) : (
           <Link href="/login" className="btn btn-primary">
             Login
           </Link>
         )}
       </div>
 
+      {/* Authenticated Content */}
       {session ? (
         <>
           {/* Upload Form Section */}
@@ -149,7 +186,7 @@ export default function HomePage() {
 
               {videoUrl && (
                 <video
-                  src={videoUrl}
+                  src={videoUrl + '?tr=f-mp4'}
                   controls
                   className="w-full rounded-lg mt-4 border"
                 />
@@ -168,7 +205,7 @@ export default function HomePage() {
           {/* Video Feed Section */}
           <div>
             <h2 className="text-2xl font-semibold mb-4">Your Videos</h2>
-            <VideoFeed videos={videos} />
+            <VideoFeed videos={videos} onVideoDelete={handleDeleteClick} onVideoEdit={handleEditClick} />
           </div>
         </>
       ) : (

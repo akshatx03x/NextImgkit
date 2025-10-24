@@ -20,6 +20,45 @@ export async function GET() {
     }
 }
 
+export async function PUT(request: NextRequest) {
+    try {
+        const session = await getServerSession(authOptions)
+        if (!session) {
+            return NextResponse.json(
+                { error: "Unauthorised" },
+                { status: 401 }
+            )
+        }
+
+        const { searchParams } = new URL(request.url)
+        const videoId = searchParams.get('id')
+
+        if (!videoId) {
+            return NextResponse.json({ error: "Video ID is required" }, { status: 400 })
+        }
+
+        await dbConnect();
+        const body: Partial<IVideo> = await request.json()
+
+        // Find the video and check if it belongs to the current user
+        const video = await Video.findOne({ _id: videoId, userId: session.user.id })
+
+        if (!video) {
+            return NextResponse.json({ error: "Video not found or access denied" }, { status: 404 })
+        }
+
+        // Update the video
+        const updatedVideo = await Video.findByIdAndUpdate(videoId, body, { new: true })
+
+        return NextResponse.json(updatedVideo)
+    } catch (error) {
+        return NextResponse.json(
+            { error: "Failed to update video" },
+            { status: 500 }
+        )
+    }
+}
+
 export async function DELETE(request: NextRequest) {
     try {
         const session = await getServerSession(authOptions)
@@ -72,11 +111,17 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Missing Required fields" },
                 { status: 400 })
         }
+        const aspectRatio = '9:16';
+        const transform = aspectRatio === '9:16' ? 'ar-9-16,c-at_max' : '';
+        const transformedVideoUrl = body.videoUrl.includes('?tr=') ? body.videoUrl : (transform ? `${body.videoUrl}?tr=${transform}` : body.videoUrl);
+
         const videoData={
             ...body,
+            videoUrl: transformedVideoUrl,
             controls: body?.controls ?? true,
             userId: new mongoose.Types.ObjectId(session.user.id),
             transformation: {
+                  aspectRatio: aspectRatio,
                   height: 1920,
                   width: 1080,
                   quality: body.transformation?.quality??100,
@@ -91,4 +136,3 @@ export async function POST(request: NextRequest) {
             )
     }
 }
-

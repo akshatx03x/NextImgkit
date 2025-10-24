@@ -29,7 +29,8 @@ export default function UploadPage() {
   }, []);
 
   const handleUploadSuccess = useCallback((res: any) => {
-    setVideoUrl(res.url);
+    const transformedUrl = `${res.url}?tr=ar-9-16,c-at_max`;
+    setVideoUrl(transformedUrl);
     setIsUploading(false);
     setUploadProgress(100);
     showNotification("Video uploaded successfully!", "success");
@@ -104,12 +105,12 @@ export default function UploadPage() {
       <div className="w-full max-w-3xl p-8 sm:p-10 bg-gray-900 rounded-2xl shadow-2xl border border-gray-800 relative">
         <button
           onClick={() => router.push('/videopage')}
-          className="absolute top-4 left-4 flex items-center gap-2 px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white rounded-lg transition-colors"
+          className="absolute top-4 text-sm flex items-center p-1 hover:font-medium bg-red-500 hover:bg-red-600 text-gray-100 hover:text-white rounded-lg transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Home
+          Back
         </button>
-        <h1 className="text-3xl font-bold mb-2 text-white">
+        <h1 className="text-3xl font-bold mt-2 text-white">
           Upload and Analyze
         </h1>
         <p className="text-sm text-gray-400 mb-8">

@@ -60,6 +60,9 @@ const FileUpload = ({ onSuccess, onProgress, fileType }: FileUploadProps) => {
         signature: auth.signature,
         expire: auth.expire,
         token: auth.token,
+        isPrivateFile: false,
+        useUniqueFileName: true,
+        folder: "/",
         onProgress: (progress) => {
           if (onProgress) {
             const percent = (progress.loaded / progress.total) * 100;

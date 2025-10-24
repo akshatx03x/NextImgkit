@@ -47,7 +47,7 @@ export default function Header() {
               </div>
               <ul
                 tabIndex={0}
-                className="dropdown-content z-[1] shadow-lg bg-base-100 rounded-box w-64 mt-4 py-2"
+                className="dropdown-content shadow-lg bg-base-100 rounded-box w-64 mt-4 py-2"
               >
                 {session ? (
                   <>

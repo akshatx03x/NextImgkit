@@ -16,6 +16,8 @@ export interface IVideo {
   controls: boolean;
   userId: mongoose.Types.ObjectId;
   transformation:{
+    filter: any;
+    aspectRatio: '16:9' | '9:16' | '4:3' | '1:1' | '21:9';
     height: number;
     width: number;
     quality?: number;
@@ -31,6 +33,7 @@ const videoSchema = new Schema<IVideo>(
     controls: {type: Boolean, default: true},
     userId: {type: Schema.Types.ObjectId, ref: 'User', required: true},
     transformation: {
+      aspectRatio: {type: String, enum: ['16:9', '9:16', '4:3', '1:1', '21:9'], default: '9:16'},
       height: {type: Number, default: VIDEO_DIMENSIONS.height},
       width: {type: Number, default: VIDEO_DIMENSIONS.width},
       quality: {type: Number, min:1, max:100},
