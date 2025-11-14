@@ -5,6 +5,37 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 
+function getTransformedImageUrl(baseUrl: string, transformation: IImage['transformation']): string {
+  if (baseUrl.includes('?tr=')) return baseUrl;
+
+  const transforms = [];
+
+  // Aspect ratio transformation
+  if (transformation.aspectRatio && transformation.aspectRatio !== '16:9') {
+    const arTransform = transformation.aspectRatio === '9:16' ? 'ar-9-16,c-at_max' :
+                       transformation.aspectRatio === '4:3' ? 'ar-4-3,c-at_max' :
+                       transformation.aspectRatio === '1:1' ? 'ar-1-1,c-at_max' :
+                       transformation.aspectRatio === '21:9' ? 'ar-21-9,c-at_max' : '';
+    if (arTransform) transforms.push(arTransform);
+  }
+
+  // Quality transformation
+  if (transformation.quality && transformation.quality !== 100) {
+    transforms.push(`q-${transformation.quality}`);
+  }
+
+  // Filter transformation
+  if (transformation.filter && transformation.filter !== 'none') {
+    const filterTransform = transformation.filter === 'sepia' ? 'e-sepia' :
+                           transformation.filter === 'grayscale' ? 'e-grayscale' :
+                           transformation.filter === 'blur' ? 'bl-10' : '';
+    if (filterTransform) transforms.push(filterTransform);
+  }
+
+  const transformString = transforms.join(',');
+  return transformString ? `${baseUrl}?tr=${transformString}` : baseUrl;
+}
+
 export async function GET() {
     try {
         await dbConnect();
@@ -48,15 +79,9 @@ export async function PUT(request: NextRequest) {
         }
 
         // Regenerate imageUrl if transformation is being updated
-        if (body.transformation && body.transformation.aspectRatio) {
+        if (body.transformation) {
             const baseUrl = image.imageUrl.split('?tr=')[0];
-            const transform = body.transformation.aspectRatio === '9:16' ? 'ar-9-16,c-at_max' :
-                             body.transformation.aspectRatio === '16:9' ? '' :
-                             body.transformation.aspectRatio === '4:3' ? 'ar-4-3,c-at_max' :
-                             body.transformation.aspectRatio === '1:1' ? 'ar-1-1,c-at_max' :
-                             body.transformation.aspectRatio === '21:9' ? 'ar-21-9,c-at_max' : '';
-            const transformedImageUrl = transform ? `${baseUrl}?tr=${transform}` : baseUrl;
-            body.imageUrl = transformedImageUrl;
+            body.imageUrl = getTransformedImageUrl(baseUrl, body.transformation as IImage['transformation']);
         }
 
         // Update the image
@@ -123,21 +148,11 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Missing Required fields" },
                 { status: 400 })
         }
-        const aspectRatio = '9:16';
-        const transform = aspectRatio === '9:16' ? 'ar-9-16,c-at_max' : '';
-        const transformedImageUrl = body.imageUrl.includes('?tr=') ? body.imageUrl : (transform ? `${body.imageUrl}?tr=${transform}` : body.imageUrl);
 
         const imageData={
             ...body,
-            imageUrl: transformedImageUrl,
+            imageUrl: getTransformedImageUrl(body.imageUrl, body.transformation),
             userId: new mongoose.Types.ObjectId(session.user.id),
-            transformation: {
-                  aspectRatio: aspectRatio,
-                  height: 1920,
-                  width: 1080,
-                  quality: body.transformation?.quality??100,
-                  filter: body.transformation?.filter??'none',
-                }
         }
        const newImage= await Image.create(imageData)
        return NextResponse.json(newImage)

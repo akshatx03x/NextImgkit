@@ -1,13 +1,11 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Send, Video, ArrowLeft } from "lucide-react";
+import { Send, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import FileUpload from "../components/FileUpload";
 import { useNotification } from "../components/Notification";
 
-
-// Assuming this component is located at src/app/upload/page.tsx
 export default function UploadPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -15,27 +13,23 @@ export default function UploadPage() {
   const [videoUrl, setVideoUrl] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [mockNotification, setMockNotification] = useState({ type: '', text: '', visible: false });
-
 
   const router = useRouter();
   const { showNotification } = useNotification(); 
   
-  // Custom upload start handler to reset states and manage the FileUpload mock
   const handleUploadStart = useCallback(() => {
     setIsUploading(true);
-    setVideoUrl(""); // Clear URL if a new upload starts
+    setVideoUrl("");
     setUploadProgress(0);
   }, []);
 
   const handleUploadSuccess = useCallback((res: any) => {
-    const transformedUrl = `${res.url}?tr=ar-9-16,c-at_max`;
-    setVideoUrl(transformedUrl);
+    // Save the base URL without transformations
+    setVideoUrl(res.url);
     setIsUploading(false);
     setUploadProgress(100);
     showNotification("Video uploaded successfully!", "success");
   }, [showNotification]);
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,8 +56,8 @@ export default function UploadPage() {
         body: JSON.stringify({
           title,
           description,
-          videoUrl,
-          thumbnailUrl: videoUrl, // Using videoUrl as thumbnail for now
+          videoUrl: videoUrl, // Base URL without transformations
+          thumbnailUrl: videoUrl,
         }),
       });
 
@@ -86,22 +80,6 @@ export default function UploadPage() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center p-4 font-sans">
-      
-      {/* MOCK Notification Display */}
-      {mockNotification.visible && (
-        <div 
-            className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-xl text-sm font-medium transition-all duration-300 transform ${
-                mockNotification.type === 'success' 
-                    ? 'bg-green-900 text-green-300 border border-green-700' 
-                    : mockNotification.type === 'warning'
-                    ? 'bg-yellow-900 text-yellow-300 border border-yellow-700'
-                    : 'bg-red-900 text-red-300 border border-red-700'
-            }`}
-        >
-            {mockNotification.text}
-        </div>
-      )}
-
       <div className="w-full max-w-3xl p-8 sm:p-10 bg-gray-900 rounded-2xl shadow-2xl border border-gray-800 relative">
         <button
           onClick={() => router.push('/videopage')}
@@ -118,7 +96,6 @@ export default function UploadPage() {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Title Input */}
           <div>
             <label htmlFor="title" className="block mb-2 font-semibold text-gray-300">
               Video Title
@@ -135,7 +112,6 @@ export default function UploadPage() {
             />
           </div>
 
-          {/* Description Textarea */}
           <div>
             <label htmlFor="description" className="block mb-2 font-semibold text-gray-300">
               Description
@@ -150,7 +126,6 @@ export default function UploadPage() {
             />
           </div>
 
-          {/* File Upload Area */}
           <div>
             <label className="block mb-2 font-semibold text-gray-300">
               Upload Video File
@@ -161,7 +136,6 @@ export default function UploadPage() {
               fileType="video"
             />
 
-            {/* Themed Progress Bar */}
             {(isUploading || (uploadProgress > 0 && uploadProgress < 100)) && (
               <div className="w-full h-2 mt-3 rounded-full bg-gray-700 overflow-hidden">
                 <div 
@@ -178,19 +152,16 @@ export default function UploadPage() {
             )}
           </div>
 
-          {/* Video Preview */}
           {videoUrl && (
             <div className="pt-4">
                 <video
                     src={videoUrl}
                     controls
                     className="w-full rounded-xl mt-4 border border-purple-600 shadow-xl"
-                    poster="https://placehold.co/600x400/3C335C/ffffff?text=Video+Preview"
                 />
             </div>
           )}
 
-          {/* Submit Button */}
           <button
             type="submit"
             className={`w-full py-3 mt-8 rounded-lg font-bold transition-all flex items-center justify-center text-lg ${

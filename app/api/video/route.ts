@@ -48,14 +48,35 @@ export async function PUT(request: NextRequest) {
         }
 
         // Regenerate videoUrl if transformation is being updated
-        if (body.transformation && body.transformation.aspectRatio) {
+        if (body.transformation) {
             const baseUrl = video.videoUrl.split('?tr=')[0];
-            const transform = body.transformation.aspectRatio === '9:16' ? 'ar-9-16,c-at_max' :
-                             body.transformation.aspectRatio === '16:9' ? '' :
-                             body.transformation.aspectRatio === '4:3' ? 'ar-4-3,c-at_max' :
-                             body.transformation.aspectRatio === '1:1' ? 'ar-1-1,c-at_max' :
-                             body.transformation.aspectRatio === '21:9' ? 'ar-21-9,c-at_max' : '';
-            const transformedVideoUrl = transform ? `${baseUrl}?tr=${transform}` : baseUrl;
+            const transforms = [];
+
+            // Aspect ratio transformation
+            if (body.transformation.aspectRatio) {
+                const arTransform = body.transformation.aspectRatio === '9:16' ? 'ar-9-16,c-at_max' :
+                                   body.transformation.aspectRatio === '16:9' ? '' :
+                                   body.transformation.aspectRatio === '4:3' ? 'ar-4-3,c-at_max' :
+                                   body.transformation.aspectRatio === '1:1' ? 'ar-1-1,c-at_max' :
+                                   body.transformation.aspectRatio === '21:9' ? 'ar-21-9,c-at_max' : '';
+                if (arTransform) transforms.push(arTransform);
+            }
+
+            // Quality transformation
+            if (body.transformation.quality && body.transformation.quality !== 100) {
+                transforms.push(`q-${body.transformation.quality}`);
+            }
+
+            // Filter transformation
+            if (body.transformation.filter && body.transformation.filter !== 'none') {
+                const filterTransform = body.transformation.filter === 'sepia' ? 'e-sepia' :
+                                       body.transformation.filter === 'grayscale' ? 'e-grayscale' :
+                                       body.transformation.filter === 'blur' ? 'bl-10' : '';
+                if (filterTransform) transforms.push(filterTransform);
+            }
+
+            const transformString = transforms.join(',');
+            const transformedVideoUrl = transformString ? `${baseUrl}?tr=${transformString}` : baseUrl;
             body.videoUrl = transformedVideoUrl;
         }
 
@@ -126,7 +147,6 @@ export async function POST(request: NextRequest) {
         const aspectRatio = '9:16';
         const transform = aspectRatio === '9:16' ? 'ar-9-16,c-at_max' : '';
         const transformedVideoUrl = body.videoUrl.includes('?tr=') ? body.videoUrl : (transform ? `${body.videoUrl}?tr=${transform}` : body.videoUrl);
-
         const videoData={
             ...body,
             videoUrl: transformedVideoUrl,
@@ -147,4 +167,5 @@ export async function POST(request: NextRequest) {
                 { status: 500 }
             )
     }
+    
 }

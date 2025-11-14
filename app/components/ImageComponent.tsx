@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { Trash2, Edit, Save, X, Download } from "lucide-react";
+import Image from "next/image";
 
 import { IImage } from "@/models/Image";
 
@@ -159,9 +160,11 @@ import { IImage } from "@/models/Image";
               className="rounded-xl overflow-hidden relative w-full"
               style={{ aspectRatio: getAspectRatio(currentImage.transformation.aspectRatio) }}
             >
-              <img
+              <Image
                 src={getTransformedImageUrl(currentImage.imageUrl, currentImage.transformation.aspectRatio)}
                 alt={currentImage.title}
+                width={currentImage.transformation.width}
+                height={currentImage.transformation.height}
                 className="w-full h-full object-cover"
                 style={{ filter: getCSSFilter() }}
               />

@@ -1,13 +1,11 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Send, Image, ArrowLeft } from "lucide-react";
+import { Send, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import FileUpload from "../components/FileUpload";
 import { useNotification } from "../components/Notification";
 
-
-// Assuming this component is located at src/app/uploadimage/page.tsx
 export default function UploadImagePage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -15,27 +13,23 @@ export default function UploadImagePage() {
   const [imageUrl, setImageUrl] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [mockNotification, setMockNotification] = useState({ type: '', text: '', visible: false });
-
 
   const router = useRouter();
   const { showNotification } = useNotification();
 
-  // Custom upload start handler to reset states and manage the FileUpload mock
   const handleUploadStart = useCallback(() => {
     setIsUploading(true);
-    setImageUrl(""); // Clear URL if a new upload starts
+    setImageUrl("");
     setUploadProgress(0);
   }, []);
 
   const handleUploadSuccess = useCallback((res: any) => {
-    const transformedUrl = `${res.url}?tr=ar-9-16,c-at_max`;
-    setImageUrl(transformedUrl);
+    // Save the base URL without transformations
+    setImageUrl(res.url);
     setIsUploading(false);
     setUploadProgress(100);
     showNotification("Image uploaded successfully!", "success");
   }, [showNotification]);
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,8 +56,8 @@ export default function UploadImagePage() {
         body: JSON.stringify({
           title,
           description,
-          imageUrl,
-          thumbnailUrl: imageUrl, // Using imageUrl as thumbnail for now
+          imageUrl: imageUrl, // Base URL without transformations
+          thumbnailUrl: imageUrl,
         }),
       });
 
@@ -86,22 +80,6 @@ export default function UploadImagePage() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center p-4 font-sans">
-
-      {/* MOCK Notification Display */}
-      {mockNotification.visible && (
-        <div
-            className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-xl text-sm font-medium transition-all duration-300 transform ${
-                mockNotification.type === 'success'
-                    ? 'bg-green-900 text-green-300 border border-green-700'
-                    : mockNotification.type === 'warning'
-                    ? 'bg-yellow-900 text-yellow-300 border border-yellow-700'
-                    : 'bg-red-900 text-red-300 border border-red-700'
-            }`}
-        >
-            {mockNotification.text}
-        </div>
-      )}
-
       <div className="w-full max-w-3xl p-8 sm:p-10 bg-gray-900 rounded-2xl shadow-2xl border border-gray-800 relative">
         <button
           onClick={() => router.push('/imagepage')}
@@ -118,7 +96,6 @@ export default function UploadImagePage() {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Title Input */}
           <div>
             <label htmlFor="title" className="block mb-2 font-semibold text-gray-300">
               Image Title
@@ -135,7 +112,6 @@ export default function UploadImagePage() {
             />
           </div>
 
-          {/* Description Textarea */}
           <div>
             <label htmlFor="description" className="block mb-2 font-semibold text-gray-300">
               Description
@@ -150,7 +126,6 @@ export default function UploadImagePage() {
             />
           </div>
 
-          {/* File Upload Area */}
           <div>
             <label className="block mb-2 font-semibold text-gray-300">
               Upload Image File
@@ -161,7 +136,6 @@ export default function UploadImagePage() {
               fileType="image"
             />
 
-            {/* Themed Progress Bar */}
             {(isUploading || (uploadProgress > 0 && uploadProgress < 100)) && (
               <div className="w-full h-2 mt-3 rounded-full bg-gray-700 overflow-hidden">
                 <div
@@ -178,7 +152,6 @@ export default function UploadImagePage() {
             )}
           </div>
 
-          {/* Image Preview */}
           {imageUrl && (
             <div className="pt-4">
                 <img
@@ -189,7 +162,6 @@ export default function UploadImagePage() {
             </div>
           )}
 
-          {/* Submit Button */}
           <button
             type="submit"
             className={`w-full py-3 mt-8 rounded-lg font-bold transition-all flex items-center justify-center text-lg ${
