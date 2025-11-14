@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { Send, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import FileUpload from "../components/FileUpload";
 import { useNotification } from "../components/Notification";
 
@@ -17,13 +18,13 @@ export default function UploadImagePage() {
   const router = useRouter();
   const { showNotification } = useNotification();
 
-  const handleUploadStart = useCallback(() => {
-    setIsUploading(true);
-    setImageUrl("");
-    setUploadProgress(0);
-  }, []);
+  // const handleUploadStart = useCallback(() => {
+  //   setIsUploading(true);
+  //   setImageUrl("");
+  //   setUploadProgress(0);
+  // }, []);
 
-  const handleUploadSuccess = useCallback((res: any) => {
+  const handleUploadSuccess = useCallback((res: { url: string }) => {
     // Save the base URL without transformations
     setImageUrl(res.url);
     setIsUploading(false);
@@ -154,9 +155,11 @@ export default function UploadImagePage() {
 
           {imageUrl && (
             <div className="pt-4">
-                <img
+                <Image
                     src={imageUrl}
                     alt="Preview"
+                    width={800}
+                    height={600}
                     className="w-full rounded-xl mt-4 border border-purple-600 shadow-xl"
                 />
             </div>

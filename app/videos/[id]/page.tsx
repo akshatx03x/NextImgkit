@@ -9,7 +9,7 @@ import { useSession } from "next-auth/react";
 
 export default function VideoDetailPage() {
   const { id } = useParams();
-  const router = useRouter();
+  // const router = useRouter();
   const { data: session } = useSession();
   const [video, setVideo] = useState<IVideo | null>(null);
   const [loading, setLoading] = useState(true);

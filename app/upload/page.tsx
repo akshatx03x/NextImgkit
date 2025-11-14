@@ -17,13 +17,13 @@ export default function UploadPage() {
   const router = useRouter();
   const { showNotification } = useNotification(); 
   
-  const handleUploadStart = useCallback(() => {
-    setIsUploading(true);
-    setVideoUrl("");
-    setUploadProgress(0);
-  }, []);
+  // const handleUploadStart = useCallback(() => {
+  //   setIsUploading(true);
+  //   setVideoUrl("");
+  //   setUploadProgress(0);
+  // }, []);
 
-  const handleUploadSuccess = useCallback((res: any) => {
+  const handleUploadSuccess = useCallback((res: { url: string }) => {
     // Save the base URL without transformations
     setVideoUrl(res.url);
     setIsUploading(false);

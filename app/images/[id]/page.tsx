@@ -9,7 +9,7 @@ import { useSession } from "next-auth/react";
 
 export default function ImageDetailPage() {
   const { id } = useParams();
-  const router = useRouter();
+  // const router = useRouter();
   const { data: session } = useSession();
   const [image, setImage] = useState<IImage | null>(null);
   const [loading, setLoading] = useState(true);

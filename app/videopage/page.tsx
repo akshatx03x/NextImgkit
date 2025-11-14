@@ -102,7 +102,6 @@ export default function VideoPage() {
       </div>
     );
   } else {
-    // @ts-expect-error: VideoFeedProps may not declare these handlers but they are passed for runtime usage
     mainContent = <VideoFeed videos={videos} onVideoDelete={handleDeleteClick} onVideoEdit={handleEditClick} />;
   }
 
