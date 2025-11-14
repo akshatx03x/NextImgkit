@@ -24,7 +24,7 @@ export default function UploadImagePage() {
   //   setUploadProgress(0);
   // }, []);
 
-  const handleUploadSuccess = useCallback((res: { url: string }) => {
+  const handleUploadSuccess = useCallback((res: { url: string; fileId: string; name: string; thumbnail?: string }) => {
     // Save the base URL without transformations
     setImageUrl(res.url);
     setIsUploading(false);

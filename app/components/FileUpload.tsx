@@ -1,16 +1,10 @@
 "use client";
 
-import {
-  ImageKitAbortError,
-  ImageKitInvalidRequestError,
-  ImageKitServerError,
-  ImageKitUploadNetworkError,
-  upload,
-} from "@imagekit/next";
-import { useRef, useState } from "react";
+import { upload } from "@imagekit/next";
+import { useState } from "react";
 
 interface FileUploadProps {
-  onSuccess: (res: any) => void;
+  onSuccess: (res: { url: string; fileId: string; name: string; thumbnail?: string }) => void;
   onProgress?: (progress: number) => void;
   fileType?: "image" | "video";
 }

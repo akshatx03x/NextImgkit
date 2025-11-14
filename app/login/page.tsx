@@ -45,7 +45,7 @@ const LoginPage = () => {
           Welcome Back
         </h2>
         <p className="text-sm text-gray-400 mb-8 text-center">
-          Login to continue your journey
+          Login to continue your journey&apos;
         </p>
 
         {/* Themed Error Message Box */}

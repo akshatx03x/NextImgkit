@@ -1,7 +1,7 @@
 // ImageComponent.tsx
   "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Trash2, Edit, Save, X, Download } from "lucide-react";
 import Image from "next/image";
 

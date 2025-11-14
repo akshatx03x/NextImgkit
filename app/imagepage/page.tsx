@@ -102,7 +102,6 @@ export default function ImagePage() {
       </div>
     );
   } else {
-    // @ts-ignore: ImageFeedProps may not declare these handlers but they are passed for runtime usage
     mainContent = <ImageFeed images={images} onImageDelete={handleDeleteClick} onImageEdit={handleEditClick} />;
   }
 
@@ -123,7 +122,7 @@ export default function ImagePage() {
             </h1>
           </div>
           <span className="text-sm font-light italic text-gray-300 left-3">
-            Explore the ultimate power of NextImgKit
+            Explore the ultimate power of NextImgKit&apos;s
           </span>
           {session && (
             <Link

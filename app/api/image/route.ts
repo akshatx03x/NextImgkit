@@ -45,7 +45,7 @@ export async function GET() {
             return NextResponse.json([], { status: 200 })
         }
         return NextResponse.json(images);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: "Failed to fetch images" },
             { status: 500 })
     }
@@ -88,7 +88,7 @@ export async function PUT(request: NextRequest) {
         const updatedImage = await Image.findByIdAndUpdate(imageId, body, { new: true })
 
         return NextResponse.json(updatedImage)
-    } catch (error) {
+    } catch {
         return NextResponse.json(
             { error: "Failed to update image" },
             { status: 500 }
@@ -125,7 +125,7 @@ export async function DELETE(request: NextRequest) {
         await Image.findByIdAndDelete(imageId)
 
         return NextResponse.json({ message: "Image deleted successfully" })
-    } catch (error) {
+    } catch {
         return NextResponse.json(
             { error: "Failed to delete image" },
             { status: 500 }
@@ -156,7 +156,7 @@ export async function POST(request: NextRequest) {
         }
        const newImage= await Image.create(imageData)
        return NextResponse.json(newImage)
-    } catch (error) {
+    } catch {
         return NextResponse.json(
                 { error: "Failed to create image" },
                 { status: 500 }

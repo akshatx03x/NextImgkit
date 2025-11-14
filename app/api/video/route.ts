@@ -14,7 +14,7 @@ export async function GET() {
             return NextResponse.json([], { status: 200 })
         }
         return NextResponse.json(videos);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: "Failed to fetch videos" },
             { status: 500 })
     }
@@ -84,7 +84,7 @@ export async function PUT(request: NextRequest) {
         const updatedVideo = await Video.findByIdAndUpdate(videoId, body, { new: true })
 
         return NextResponse.json(updatedVideo)
-    } catch (error) {
+    } catch {
         return NextResponse.json(
             { error: "Failed to update video" },
             { status: 500 }
@@ -121,7 +121,7 @@ export async function DELETE(request: NextRequest) {
         await Video.findByIdAndDelete(videoId)
 
         return NextResponse.json({ message: "Video deleted successfully" })
-    } catch (error) {
+    } catch {
         return NextResponse.json(
             { error: "Failed to delete video" },
             { status: 500 }
@@ -161,7 +161,7 @@ export async function POST(request: NextRequest) {
         }
        const newVideo= await Video.create(videoData)
        return NextResponse.json(newVideo)
-    } catch (error) {
+    } catch {
         return NextResponse.json(
                 { error: "Failed to create video" },
                 { status: 500 }

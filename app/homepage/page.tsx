@@ -60,7 +60,7 @@ export default function HomePage() {
   };
 
   // ✅ Handle successful upload
-  const handleUploadSuccess = (res: any) => {
+  const handleUploadSuccess = (res: { url: string; fileId: string; name: string; thumbnail?: string }) => {
     setVideoUrl(res.url);
     setUploading(false);
     showNotification("Video uploaded successfully!", "success");
