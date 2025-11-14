@@ -67,9 +67,18 @@ const FileUpload = ({ onSuccess, onProgress, fileType }: FileUploadProps) => {
           }
         },
       });
-      
+
       // Pass the raw URL without transformations
-      onSuccess(res);
+      if (res.url && res.fileId && res.name) {
+        onSuccess({
+          url: res.url,
+          fileId: res.fileId,
+          name: res.name,
+          thumbnail: res.thumbnailUrl,
+        });
+      } else {
+        throw new Error("Upload failed: Missing required fields");
+      }
     } catch (error) {
       console.error("Upload failed", error);
       setError(error instanceof Error ? error.message : "Upload failed");

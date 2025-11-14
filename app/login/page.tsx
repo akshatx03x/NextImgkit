@@ -45,7 +45,7 @@ const LoginPage = () => {
           Welcome Back
         </h2>
         <p className="text-sm text-gray-400 mb-8 text-center">
-          Login to continue your journey&apos;
+          Login to continue your journey&apos;s
         </p>
 
         {/* Themed Error Message Box */}
@@ -113,7 +113,7 @@ const LoginPage = () => {
         </form>
         
         <p className="text-sm mt-6 text-center text-gray-400">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <span
             onClick={() => router.push("/register")}
             className="text-purple-400 cursor-pointer font-semibold hover:text-purple-300 transition-colors"

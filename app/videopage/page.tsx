@@ -90,7 +90,7 @@ export default function VideoPage() {
           Your Videos Will Appear Here
         </p>
         <p className="text-center text-gray-400 mb-8 max-w-md">
-          It looks like you haven't uploaded any videos yet. Click below to get started!
+          It looks like you haven&apos;t uploaded any videos yet. Click below to get started!
         </p>
         <Link
           href="/upload"
@@ -118,11 +118,11 @@ export default function VideoPage() {
               Back
             </Link>
             <h1 className="text-4xl font-extrabold tracking-tight">
-              Edit ~Videos
+              Edit ~Videos&apos;
             </h1>
           </div>
           <span className="text-sm font-light italic text-gray-300 left-3">
-            Explore the ultimate power of NextImgKit&apos;
+            Explore the ultimate power of NextImgKit&#39;s AI tools
           </span>
           {session && (
             <Link

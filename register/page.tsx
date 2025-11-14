@@ -24,7 +24,7 @@ const RegisterPage = () => {
       if (response.ok) {
         router.push('/login')
       }
-    } catch (error) {
+    } catch {
       setMessage('An error occurred')
     }
   }

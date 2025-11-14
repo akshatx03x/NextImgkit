@@ -30,8 +30,8 @@ export default function HomePage() {
           const data = await response.json();
           setVideos(data);
         }
-      } catch (error) {
-        console.error("Failed to fetch videos:", error);
+      } catch {
+        console.error("Failed to fetch videos");
       }
     };
     fetchVideos();
@@ -112,7 +112,7 @@ export default function HomePage() {
       setDescription("");
       setVideoUrl("");
       setUploadProgress(0);
-    } catch (error) {
+    } catch {
       showNotification("Failed to save video", "error");
     }
   };

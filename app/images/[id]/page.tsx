@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, Download, Edit } from "lucide-react";
 import { IImage } from "@/models/Image";
 import { useSession } from "next-auth/react";
@@ -159,10 +160,11 @@ export default function ImageDetailPage() {
               className="relative w-full"
               style={{ aspectRatio: getAspectRatio(image.transformation.aspectRatio) }}
             >
-              <img
+              <Image
                 src={getTransformedImageUrl(image)}
                 alt={image.title}
-                className="w-full h-full object-contain"
+                fill
+                className="object-contain"
                 style={{ filter: getCSSFilter() }}
               />
             </div>

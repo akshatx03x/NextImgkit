@@ -6,7 +6,7 @@ export const IMAGE_DIMENSIONS = {
 } as const;
 
 export interface IImage {
-  _id: any;
+  _id: string;
   title: string;
   id?: mongoose.Types.ObjectId;
   description: string;

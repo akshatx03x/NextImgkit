@@ -1,5 +1,4 @@
 import mongoose, {Schema, model, models} from "mongoose";
-import bcrypt from "bcryptjs";
 
 export const VIDEO_DIMENSIONS = {
     width:1080,
@@ -7,7 +6,7 @@ export const VIDEO_DIMENSIONS = {
 } as const;
 
 export interface IVideo {
-  _id: any;
+  _id: string;
   title: string;
   id?: mongoose.Types.ObjectId;
   description: string;
@@ -16,7 +15,7 @@ export interface IVideo {
   controls: boolean;
   userId: mongoose.Types.ObjectId;
   transformation:{
-    filter: any;
+    filter: string;
     aspectRatio: '16:9' | '9:16' | '4:3' | '1:1' | '21:9';
     height: number;
     width: number;
