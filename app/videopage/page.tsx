@@ -122,7 +122,7 @@ export default function VideoPage() {
             </h1>
           </div>
           <span className="text-sm font-light italic text-gray-300 left-3">
-            Explore the ultimate power of NextImgKit
+            Explore the ultimate power of NextImgKit&apos;
           </span>
           {session && (
             <Link

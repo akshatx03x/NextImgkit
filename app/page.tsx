@@ -1,18 +1,12 @@
 "use client";
 import React from 'react';
-import { Image, Video, LogOut, ChevronRight } from 'lucide-react';
+import { Video, LogOut, ChevronRight } from 'lucide-react';
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 
 const HomePage = () => {
 
-  const handleEditImage = () => {
-    console.log("Starting Image Editor...");
-  };
 
-  const handleEditVideo = () => {
-    console.log("Redirecting to Video Editor...");
-  };
 
   const handleLogout = async () => {
     try {
