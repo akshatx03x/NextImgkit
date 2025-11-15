@@ -59,6 +59,13 @@ export default function UploadImagePage() {
           description,
           imageUrl: imageUrl, // Base URL without transformations
           thumbnailUrl: imageUrl,
+          transformation: {
+            filter: 'none',
+            aspectRatio: '9:16',
+            height: 1920,
+            width: 1080,
+            quality: 100,
+          },
         }),
       });
 

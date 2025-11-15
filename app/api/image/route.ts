@@ -1,6 +1,6 @@
 import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/db";
-import Image, { IImage } from "@/models/Image";
+import Image, { IImage, IMAGE_DIMENSIONS } from "@/models/Image";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
@@ -147,6 +147,17 @@ export async function POST(request: NextRequest) {
         if (!body.title|| !body.description || !body.imageUrl || !body.thumbnailUrl) {
             return NextResponse.json({ error: "Missing Required fields" },
                 { status: 400 })
+        }
+
+        // Set default transformation if not provided
+        if (!body.transformation) {
+            body.transformation = {
+                filter: 'none',
+                aspectRatio: '9:16',
+                height: IMAGE_DIMENSIONS.height,
+                width: IMAGE_DIMENSIONS.width,
+                quality: 100,
+            };
         }
 
         const imageData={
