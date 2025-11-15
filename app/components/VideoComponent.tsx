@@ -2,21 +2,7 @@
 
 import { useState } from "react";
 import { Trash2, Edit, Save, X, Download } from "lucide-react";
-
-interface IVideo {
-  _id?: string | number;
-  title: string;
-  description: string;
-  videoUrl: string;
-  controls: boolean;
-  transformation?: {
-    aspectRatio?: '16:9' | '9:16' | '4:3' | '1:1' | '21:9';
-    width: number;
-    height: number;
-    quality: number;
-    filter?: 'none' | 'sepia' | 'grayscale' | 'blur';
-  };
-}
+import { IVideo } from "@/models/Video";
 
 export default function VideoComponent({
   video,

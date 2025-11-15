@@ -6,7 +6,7 @@ export const VIDEO_DIMENSIONS = {
 } as const;
 
 export interface IVideo {
-  _id: string;
+  _id?: string | number;
   title: string;
   id?: mongoose.Types.ObjectId;
   description: string;
@@ -14,12 +14,12 @@ export interface IVideo {
   thumbnailUrl: string;
   controls: boolean;
   userId: mongoose.Types.ObjectId;
-  transformation:{
-    filter: string;
-    aspectRatio: '16:9' | '9:16' | '4:3' | '1:1' | '21:9';
-    height: number;
+  transformation?: {
+    aspectRatio?: '16:9' | '9:16' | '4:3' | '1:1' | '21:9';
     width: number;
-    quality?: number;
+    height: number;
+    quality: number;
+    filter?: 'none' | 'sepia' | 'grayscale' | 'blur';
   }
 }
 
@@ -32,6 +32,7 @@ const videoSchema = new Schema<IVideo>(
     controls: {type: Boolean, default: true},
     userId: {type: Schema.Types.ObjectId, ref: 'User', required: true},
     transformation: {
+      filter: {type: String, enum: ['none', 'sepia', 'grayscale', 'blur'], default: 'none'},
       aspectRatio: {type: String, enum: ['16:9', '9:16', '4:3', '1:1', '21:9'], default: '9:16'},
       height: {type: Number, default: VIDEO_DIMENSIONS.height},
       width: {type: Number, default: VIDEO_DIMENSIONS.width},

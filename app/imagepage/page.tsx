@@ -85,7 +85,7 @@ export default function ImagePage() {
   } else if (images.length === 0) {
     mainContent = (
       <div className="flex flex-col items-center justify-center p-20 bg-gray-900/50 rounded-xl border-2 border-dashed border-purple-600 mt-10 shadow-xl">
-        <Image className="w-16 h-16 text-purple-500 mb-4" alt="Image icon" />
+        <Image className="w-16 h-16 text-purple-500 mb-4"  />
         <p className="text-2xl font-bold mb-2 text-white">
           Your Images Will Appear Here
         </p>

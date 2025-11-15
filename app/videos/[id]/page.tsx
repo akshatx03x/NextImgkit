@@ -41,7 +41,7 @@ export default function VideoDetailPage() {
     const transforms = [];
 
     // Aspect ratio transformation
-    if (vid.transformation.aspectRatio && vid.transformation.aspectRatio !== '16:9') {
+    if (vid.transformation?.aspectRatio && vid.transformation.aspectRatio !== '16:9') {
       const arTransform = vid.transformation.aspectRatio === '9:16' ? 'ar-9-16,c-at_max' :
                          vid.transformation.aspectRatio === '4:3' ? 'ar-4-3,c-at_max' :
                          vid.transformation.aspectRatio === '1:1' ? 'ar-1-1,c-at_max' :
@@ -52,12 +52,12 @@ export default function VideoDetailPage() {
     // Include quality and filter only if includeAllTransforms is true
     if (includeAllTransforms) {
       // Quality transformation
-      if (vid.transformation.quality && vid.transformation.quality !== 100) {
+      if (vid.transformation?.quality && vid.transformation.quality !== 100) {
         transforms.push(`q-${vid.transformation.quality}`);
       }
 
       // Filter transformation
-      if (vid.transformation.filter && vid.transformation.filter !== 'none') {
+      if (vid.transformation?.filter && vid.transformation.filter !== 'none') {
         const filterTransform = vid.transformation.filter === 'sepia' ? 'e-sepia' :
                                vid.transformation.filter === 'grayscale' ? 'e-grayscale' :
                                vid.transformation.filter === 'blur' ? 'bl-10' : '';
@@ -71,7 +71,7 @@ export default function VideoDetailPage() {
 
   const getCSSFilter = () => {
     if (!video) return 'none';
-    switch (video.transformation.filter) {
+    switch (video.transformation?.filter) {
       case 'sepia': return 'sepia(1)';
       case 'grayscale': return 'grayscale(1)';
       case 'blur': return 'blur(10px)';
@@ -157,7 +157,7 @@ export default function VideoDetailPage() {
           <div className="bg-gray-900 rounded-xl overflow-hidden shadow-2xl">
             <div
               className="relative w-full"
-              style={{ aspectRatio: getAspectRatio(video.transformation.aspectRatio) }}
+              style={{ aspectRatio: getAspectRatio(video.transformation?.aspectRatio) }}
             >
               <video
                 src={getTransformedVideoUrl(video)}
@@ -180,19 +180,19 @@ export default function VideoDetailPage() {
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="text-gray-400">Aspect Ratio:</span>
-                <span className="ml-2 text-white">{video.transformation.aspectRatio || '9:16'}</span>
+                <span className="ml-2 text-white">{video.transformation?.aspectRatio || '9:16'}</span>
               </div>
               <div>
                 <span className="text-gray-400">Quality:</span>
-                <span className="ml-2 text-white">{video.transformation.quality || 100}%</span>
+                <span className="ml-2 text-white">{video.transformation?.quality || 100}%</span>
               </div>
               <div>
                 <span className="text-gray-400">Filter:</span>
-                <span className="ml-2 text-white capitalize">{video.transformation.filter || 'None'}</span>
+                <span className="ml-2 text-white capitalize">{video.transformation?.filter || 'None'}</span>
               </div>
               <div>
                 <span className="text-gray-400">Dimensions:</span>
-                <span className="ml-2 text-white">{video.transformation.width} x {video.transformation.height}</span>
+                <span className="ml-2 text-white">{video.transformation?.width} x {video.transformation?.height}</span>
               </div>
             </div>
           </div>
