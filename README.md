@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Imagekit
 
-## Getting Started
+A full-stack Next.js application for image + video editing, download, and integration with ImageKit.io and AI video generation
 
-First, run the development server:
+🚀 Why this exists
 
-```bash
+During my hackathon and project-prep phase (and especially as I focus on MERN-+Next.js and AI/ML integration), I wanted a standalone, deployable demo that:
+
+handles media (images/videos) editing & download
+
+uses real-time features (e.g., group video calls, file share) via WebRTC/Socket.io
+
+integrates an external service (ImageKit) for media infrastructure
+
+can be shown live during interviews or internship pitches
+This repo is the culmination of that — a project that stands out, showcases web dev + cloud + AI touches.
+
+🎯 Features
+
+Next.js (TypeScript) frontend + API routes
+
+Media upload/edit (photo + video) via ImageKit SDK
+
+Download edited assets to client
+
+Group video call functionality (WebRTC)
+
+Real-time chat & file sharing (Socket.io)
+
+Notes app for shared meeting minutes
+
+AI video generation (via Gemini API) for discussion question generation
+
+Free-hosting friendly (no paid services required)
+
+🧰 Tech Stack
+
+Frontend: Next.js with TypeScript
+
+Backend/API: Next.js API routes (Node)
+
+Realtime: Socket.io for chat/file transfer + WebRTC for video calls
+
+Media & Storage: ImageKit.io (upload, transform, deliver)
+
+AI/ML Integration: Gemini API (or another GenAI tool)
+
+Database (if applicable): Mongoose / MongoDB (optional)
+
+Hosting: Vercel (or any free-tier platform)
+
+📥 Getting Started
+Prerequisites
+
+Node.js (v16+) & npm/yarn/pnpm
+
+An account with ImageKit.io (to get an API key and endpoint)
+
+(Optional) A Gemini API key or equivalent for AI video generation
+
+Setup
+git clone https://github.com/akshatx03x/Imagekit.git
+cd Imagekit
+npm install            # or yarn / pnpm
+
+Configure environment
+
+Create a .env.local (or similar) file in the root with values like:
+
+NEXT_PUBLIC_IMAGEKIT_URL = https://<your-imagekit-endpoint>
+IMAGEKIT_API_KEY          = <your-imagekit-api-key>
+IMAGEKIT_PRIVATE_KEY      = <your-imagekit-private-key>
+GEMINI_API_KEY            = <your-gemini-api-key>         # optional
+
+Run locally
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Then open http://localhost:3000
+ in your browser.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Build & deploy
+npm run build
+npm start
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+You can deploy to Vercel directly (just link your GitHub repo) or any free-hosting capable of Node/Next.js.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+🧩 Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+A quick overview:
 
-## Deploy on Vercel
+/app                 – Next.js “app” directory (pages, components, styling)  
+/lib                 – utility libraries (e.g., ImageKit helper, socket init)  
+/models              – database models (if using MongoDB/Mongoose)  
+/public              – static assets (images, icons)  
+/register            – maybe a sub-app for user registration/auth?  
+middleware.ts        – Next.js middleware config  
+next.config.ts       – Next.js config  
+tsconfig.json        – TypeScript config  
+types.d.ts           – global type definitions  
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+✅ What makes this stand out
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+It combines front-end + back-end + realtime + media processing + AI — demonstrating breadth and integration.
+
+The use of ImageKit gives you real-world media infra instead of toy uploads.
+
+Free-hosting friendly: you are not relying on costly services; this is deploy-ready.
+
+Good project to demo during internships/interviews — you can walk through architecture & highlight each piece.
